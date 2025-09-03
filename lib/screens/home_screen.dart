@@ -1,18 +1,54 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../app/themes.dart';
 import '../data/sample_data.dart';
 import '../widgets/product_card.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  Widget _buildCategoryImage(String imagePath, {double size = 72}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.asset(
+        imagePath,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Container(
+          width: size,
+          height: size,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.black12,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Icon(Icons.category),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final shuffled = List.of(products)..shuffle(Random());
+    final todaysSuggestions = shuffled.take(4).toList();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Campus Cafe'),
+        title: SvgPicture.asset(
+          'assets/images/campus_cafe_logo.svg',
+          height: 56,
+          colorFilter: ColorFilter.mode(
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+            BlendMode.srcIn,
+          ),
+        ),
         actions: [
           IconButton(
             tooltip: 'Favoriler',
@@ -28,6 +64,7 @@ class HomeScreen extends StatelessWidget {
       ),
       body: CustomScrollView(
         slivers: [
+          // ---- Bugünün önerileri ----
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -38,16 +75,17 @@ class HomeScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 12),
                   SizedBox(
-                    height: 210,
+                    height: 285,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemCount: 4,
+                      itemCount: todaysSuggestions.length,
                       separatorBuilder: (_, __) => const SizedBox(width: 12),
                       itemBuilder: (context, index) {
-                        final item = products[index];
+                        final item = todaysSuggestions[index];
                         return SizedBox(
                           width: 280,
-                          child: ProductCard(product: item),
+                          child: ProductCard(
+                              product: item, showDescription: false),
                         );
                       },
                     ),
@@ -57,6 +95,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // ---- Kategoriler ----
           SliverPadding(
             padding: const EdgeInsets.all(16),
             sliver: SliverGrid.builder(
@@ -79,7 +119,8 @@ class HomeScreen extends StatelessWidget {
                           Theme.of(context).colorScheme.primary.withAlpha(26),
                           Theme.of(context).colorScheme.secondary.withAlpha(20),
                         ],
-                        begin: Alignment.topLeft, end: Alignment.bottomRight
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(24),
                     ),
@@ -87,9 +128,18 @@ class HomeScreen extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(c.emoji, style: const TextStyle(fontSize: 42)),
-                          const SizedBox(height: 8),
-                          Text(c.title, style: Theme.of(context).textTheme.titleMedium),
+                          _buildCategoryImage(c.image, size: 72), // 56 → 72
+                          const SizedBox(height: 10),
+                          Text(
+                            c.title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
                         ],
                       ),
                     ),

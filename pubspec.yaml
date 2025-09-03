@@ -1,5 +1,5 @@
 name: cafe_menu
-description: A design-first Campus Cafe Menu App.
+description: Campus Cafe Menu App.
 publish_to: "none"
 version: 1.0.0+1
 
@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_svg: ^2.0.7
+  flutter_launcher_icons: ^0.13.1
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
   go_router: ^14.2.0
@@ -23,3 +25,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/categories/
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"

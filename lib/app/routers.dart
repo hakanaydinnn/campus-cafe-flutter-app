@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../screens/home_screen.dart';
 import '../screens/category_screen.dart';
@@ -6,33 +7,60 @@ import '../screens/product_detail_screen.dart';
 import '../screens/splash_screen.dart';
 import '../data/sample_data.dart';
 
+/// Tek tip animasyonlu sayfa oluşturucu
+CustomTransitionPage<T> _animatedPage<T>({required Widget child}) {
+  return CustomTransitionPage<T>(
+    child: child,
+    transitionDuration: const Duration(milliseconds: 300),
+    reverseTransitionDuration: const Duration(milliseconds: 250),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.03, 0.02), // hafif sağ–aşağıdan gelsin
+            end: Offset.zero,
+          ).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
 GoRouter createRouter() {
   return GoRouter(
     initialLocation: '/splash',
     routes: [
       GoRoute(
         path: '/splash',
-        builder: (context, state) => const SplashScreen(),
+        pageBuilder: (context, state) =>
+            _animatedPage(child: const SplashScreen()),
       ),
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomeScreen(),
+        pageBuilder: (context, state) =>
+            _animatedPage(child: const HomeScreen()),
         routes: [
           GoRoute(
             path: 'category/:id',
-            builder: (context, state) =>
-                CategoryScreen(categoryId: state.pathParameters['id']!),
+            pageBuilder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return _animatedPage(child: CategoryScreen(categoryId: id));
+            },
           ),
           GoRoute(
             path: 'favorites',
-            builder: (context, state) => const FavoritesScreen(),
+            pageBuilder: (context, state) =>
+                _animatedPage(child: const FavoritesScreen()),
           ),
           GoRoute(
             path: 'product/:id',
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final id = state.pathParameters['id']!;
               final product = products.firstWhere((p) => p.id == id);
-              return ProductDetailScreen(product: product);
+              return _animatedPage(child: ProductDetailScreen(product: product));
             },
           ),
         ],
