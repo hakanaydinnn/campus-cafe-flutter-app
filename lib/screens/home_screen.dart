@@ -141,7 +141,7 @@ class HomeScreen extends StatelessWidget {
                         splashColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         overlayColor:
-                            MaterialStateProperty.all(Colors.transparent),
+                            WidgetStateProperty.all(Colors.transparent),
                         onTap: () => context.push('/category/${c.id}'),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(

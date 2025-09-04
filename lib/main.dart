@@ -23,13 +23,19 @@ class CafeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = context.watch<ThemeProvider>();
     final router = createRouter();
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'Campus Cafe',
-      themeMode: theme.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      routerConfig: router,
+
+    return AnimatedTheme(
+      data: theme.isDarkMode ? AppTheme.dark : AppTheme.light,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOut,
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Campus Cafe',
+        themeMode: theme.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        routerConfig: router,
+      ),
     );
   }
 }

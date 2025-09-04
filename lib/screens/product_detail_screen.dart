@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/product.dart';
+import '../providers/favorites_provider.dart';
+import '../widgets/cupertino_toast.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final Product product;
@@ -13,6 +16,54 @@ class ProductDetailScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          Consumer<FavoritesProvider>(
+            builder: (context, favs, _) {
+              final isFav = favs.isFavorite(product);
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                // Hafif "tap shrink" hissi için AnimatedScale
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  transitionBuilder: (child, anim) => ScaleTransition(
+                      scale: CurvedAnimation(
+                          parent: anim, curve: Curves.easeOutBack),
+                      child: child),
+                  child: IconButton(
+                    key: ValueKey<bool>(isFav), // switcher için
+                    tooltip: isFav ? 'Favoriden çıkar' : 'Favorilere ekle',
+                    // Erişilebilirlik için 44x44 hedef alan (görsel çerçeve YOK)
+                    constraints:
+                        const BoxConstraints.tightFor(width: 44, height: 44),
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      // Favoriyken kırmızı; değilken temaya göre kontrastlı renk
+                      color: isFav
+                          ? Colors.red
+                          : (isDark ? Colors.white : Colors.black87),
+                      size: 22,
+                    ),
+                    onPressed: () {
+                      favs.toggleFavorite(product);
+
+                      final isFavNow = favs.isFavorite(product);
+                      CupertinoToast.show(
+                        context,
+                        message: isFavNow
+                            ? 'Favorilere eklendi'
+                            : 'Favoriden çıkarıldı',
+                        icon: isFavNow ? Icons.favorite : Icons.favorite_border,
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -40,16 +91,21 @@ class ProductDetailScreen extends StatelessWidget {
                   ),
             ),
             const SizedBox(height: 12),
-            Text(product.description,
-                style: Theme.of(context).textTheme.bodyLarge),
+            Text(
+              product.description,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
             const SizedBox(height: 24),
-            Text('Alerjen Bilgileri',
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'Alerjen Bilgileri',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             Card(
               elevation: 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: DataTable(
