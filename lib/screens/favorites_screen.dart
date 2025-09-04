@@ -11,7 +11,12 @@ class FavoritesScreen extends StatelessWidget {
     final favorites = context.watch<FavoritesProvider>().favorites;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Favori Ürünler')),
+      appBar: AppBar(
+        title: const Text('Favori Ürünler'),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: favorites.isEmpty
           ? const Center(child: Text('Henüz favori ürün yok.'))
           : ListView.builder(

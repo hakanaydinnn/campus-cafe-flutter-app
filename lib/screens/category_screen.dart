@@ -10,8 +10,14 @@ class CategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = products.where((p) => p.categoryId == categoryId).toList();
     final title = categories.firstWhere((c) => c.id == categoryId).title;
+
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

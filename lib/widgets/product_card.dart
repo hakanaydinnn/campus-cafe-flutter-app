@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../providers/favorites_provider.dart';
+import '../widgets/tap_scale.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -21,6 +22,7 @@ class ProductCard extends StatelessWidget {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: TapScale(
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () => context.push('/product/${product.id}'),
@@ -52,26 +54,45 @@ class ProductCard extends StatelessWidget {
                         Positioned(
                           top: 8,
                           right: 8,
-                          child: IconButton(
-                            constraints: const BoxConstraints.tightFor(
-                                width: 36, height: 36),
-                            padding: EdgeInsets.zero,
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.black.withOpacity(0.18),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 180),
+                            curve: Curves.easeOut,
+                            decoration: BoxDecoration(
+                              color: (isFav
+                                  ? Colors.red.withOpacity(0.20)
+                                  : Colors.black.withOpacity(0.18)),
+                              borderRadius: BorderRadius.circular(18),
                             ),
-                            icon: Icon(
-                              isFav ? Icons.favorite : Icons.favorite_border,
-                              color: isFav ? Colors.red : Colors.white,
-                              size: 20,
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 180),
+                              transitionBuilder: (child, anim) {
+                                final curved = CurvedAnimation(
+                                    parent: anim, curve: Curves.easeOutBack);
+                                return ScaleTransition(
+                                    scale: curved, child: child);
+                              },
+                              child: IconButton(
+                                key: ValueKey<bool>(
+                                    isFav),
+                                constraints: const BoxConstraints.tightFor(
+                                    width: 36, height: 36),
+                                padding: EdgeInsets.zero,
+                                icon: Icon(
+                                  isFav
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: isFav ? Colors.red : Colors.white,
+                                  size: 20,
+                                ),
+                                onPressed: () => favs.toggleFavorite(product),
+                              ),
                             ),
-                            onPressed: () => favs.toggleFavorite(product),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                
                 const SizedBox(height: 10),
                 Text(
                   product.title,
@@ -81,7 +102,6 @@ class ProductCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                 ),
-
                 if (showDescription) ...[
                   const SizedBox(height: 4),
                   Text(
@@ -91,7 +111,6 @@ class ProductCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
-
                 const Spacer(),
                 Text(
                   '${product.price.toStringAsFixed(0)} ₺',
@@ -101,7 +120,7 @@ class ProductCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
+      ),),
     );
   }
 }

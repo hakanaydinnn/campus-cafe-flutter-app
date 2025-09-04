@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import '../app/themes.dart';
 import '../data/sample_data.dart';
 import '../widgets/product_card.dart';
+import '../widgets/tap_scale.dart';
+import '../widgets/stagger_fade_in.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -39,6 +41,7 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: SvgPicture.asset(
           'assets/images/campus_cafe_logo.svg',
           height: 56,
@@ -50,15 +53,23 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          IconButton(
-            tooltip: 'Favoriler',
-            onPressed: () => context.push('/favorites'),
-            icon: const Icon(Icons.favorite),
+          TapScale(
+            pressedScale: 0.9,
+            duration: const Duration(milliseconds: 80),
+            child: IconButton(
+              tooltip: 'Favoriler',
+              onPressed: () => context.push('/favorites'),
+              icon: const Icon(Icons.favorite),
+            ),
           ),
-          IconButton(
-            tooltip: 'Tema',
-            onPressed: () => context.read<ThemeProvider>().toggle(),
-            icon: const Icon(Icons.brightness_6),
+          TapScale(
+            pressedScale: 0.9,
+            duration: const Duration(milliseconds: 80),
+            child: IconButton(
+              tooltip: 'Tema',
+              onPressed: () => context.read<ThemeProvider>().toggle(),
+              icon: const Icon(Icons.brightness_6),
+            ),
           ),
         ],
       ),
@@ -82,10 +93,15 @@ class HomeScreen extends StatelessWidget {
                       separatorBuilder: (_, __) => const SizedBox(width: 12),
                       itemBuilder: (context, index) {
                         final item = todaysSuggestions[index];
-                        return SizedBox(
-                          width: 280,
-                          child: ProductCard(
-                              product: item, showDescription: false),
+                        return StaggerFadeIn(
+                          index: index, // <- ListView.builder'daki index
+                          child: TapScale(
+                            child: SizedBox(
+                              width: 280,
+                              child: ProductCard(
+                                  product: item, showDescription: false),
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -109,38 +125,45 @@ class HomeScreen extends StatelessWidget {
               itemCount: categories.length,
               itemBuilder: (context, i) {
                 final c = categories[i];
-                return InkWell(
-                  borderRadius: BorderRadius.circular(24),
-                  onTap: () => context.push('/category/${c.id}'),
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary.withAlpha(26),
-                          Theme.of(context).colorScheme.secondary.withAlpha(20),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                return StaggerFadeIn(
+                  index: i,
+                  child: TapScale(
+                    child: Card(
+                      elevation: 12,
+                      shadowColor: Colors.black.withOpacity(0.25),
+                      surfaceTintColor:
+                          Colors.transparent, // Material3 tint’i kapatır
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildCategoryImage(c.image, size: 72), // 56 → 72
-                          const SizedBox(height: 10),
-                          Text(
-                            c.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        overlayColor:
+                            MaterialStateProperty.all(Colors.transparent),
+                        onTap: () => context.push('/category/${c.id}'),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 24, horizontal: 16),
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildCategoryImage(c.image, size: 72),
+                                const SizedBox(height: 10),
+                                Text(
+                                  c.title,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
                                 ),
-                            textAlign: TextAlign.center,
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),

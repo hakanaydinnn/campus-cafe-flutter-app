@@ -8,7 +8,12 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(product.title)),
+      appBar: AppBar(
+        title: Text(product.title),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -27,24 +32,24 @@ class ProductDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
             Text(
-              product.title, 
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold,
-              ),
+              product.title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
-
             const SizedBox(height: 12),
-            Text(product.description, style: Theme.of(context).textTheme.bodyLarge),
-
+            Text(product.description,
+                style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 24),
-            Text('Alerjen Bilgileri', style: Theme.of(context).textTheme.titleMedium),
+            Text('Alerjen Bilgileri',
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-
             Card(
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: DataTable(
@@ -59,15 +64,16 @@ class ProductDetailScreen extends StatelessWidget {
                   rows: [
                     _row(context, 'Gluten', product.allergens.gluten),
                     _row(context, 'Laktoz', product.allergens.lactose),
-                    _row(context, 'Kuruyemiş (Tree nuts)', product.allergens.nuts),
-                    _row(context, 'Yer fıstığı (Peanut)', product.allergens.peanuts),
+                    _row(context, 'Kuruyemiş (Tree nuts)',
+                        product.allergens.nuts),
+                    _row(context, 'Yer fıstığı (Peanut)',
+                        product.allergens.peanuts),
                     _row(context, 'Soya', product.allergens.soy),
                     _row(context, 'Yumurta', product.allergens.egg),
                   ],
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
             Text(
               '${product.price.toStringAsFixed(2)} ₺',
@@ -86,12 +92,14 @@ class ProductDetailScreen extends StatelessWidget {
 
     switch (status) {
       case AllergenStatus.contains:
-        icon = Icon(Icons.cancel, size: 18, color: Theme.of(context).colorScheme.error);
+        icon = Icon(Icons.cancel,
+            size: 18, color: Theme.of(context).colorScheme.error);
         text = 'İçerir';
         color = Theme.of(context).colorScheme.error;
         break;
       case AllergenStatus.mayContain:
-        icon = Icon(Icons.warning, size: 18, color: Theme.of(context).colorScheme.secondary);
+        icon = Icon(Icons.warning,
+            size: 18, color: Theme.of(context).colorScheme.secondary);
         text = 'İz miktarda içerebilir';
         color = Theme.of(context).colorScheme.secondary;
         break;
